@@ -4,173 +4,173 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>DharmaAI — সনাতন জ্ঞানের আলো</title>
-<link href="https://fonts.googleapis.com/css2?family=Tiro+Devanagari+Hindi&family=Hind+Siliguri:wght@300;400;500;600;700&family=Crimson+Pro:ital,wght@0,300;0,400;0,600;1,300;1,400&display=swap" rel="stylesheet">
+
+<!-- Firebase SDK - HEAD এ লোড করতে হবে -->
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
+
+<link href="https://fonts.googleapis.com/css2?family=Tiro+Devanagari+Hindi&family=Hind+Siliguri:wght@300;400;500;600;700&family=Crimson+Pro:ital,wght@0,400;0,600;1,400&display=swap" rel="stylesheet">
 <style>
-* { margin: 0; padding: 0; box-sizing: border-box; }
+* { margin:0; padding:0; box-sizing:border-box; }
 :root {
-  --bg: #0F0E0C; --bg2: #181610; --bg3: #201E18; --bg4: #282420;
-  --border: rgba(255,220,100,0.08); --border2: rgba(255,220,100,0.15);
-  --gold: #D4A843; --gold2: #F0C060; --gold3: #FFE08A;
-  --saffron: #E8720C; --cream: #F5EDD8; --cream2: #EDE0C0;
-  --text: #E8DFC8; --text2: #B8A888; --text3: #7A6E5A;
-  --green: #5A9A6A; --shadow: rgba(212,168,67,0.08);
+  --bg:#0F0E0C; --bg2:#181610; --bg3:#201E18; --bg4:#282420;
+  --border:rgba(255,220,100,0.08); --border2:rgba(255,220,100,0.15);
+  --gold:#D4A843; --gold2:#F0C060; --gold3:#FFE08A;
+  --saffron:#E8720C; --cream:#F5EDD8; --cream2:#EDE0C0;
+  --text:#E8DFC8; --text2:#B8A888; --text3:#7A6E5A;
+  --green:#5A9A6A; --red:#E85A5A;
 }
-html, body { height: 100%; background: var(--bg); font-family: 'Hind Siliguri', sans-serif; color: var(--text); overflow: hidden; }
-.app { display: flex; height: 100vh; }
+html,body { height:100%; background:var(--bg); font-family:'Hind Siliguri',sans-serif; color:var(--text); overflow:hidden; }
+.app { display:flex; height:100vh; }
+
+/* LOGIN */
+#loginScreen { position:fixed; inset:0; background:linear-gradient(160deg,#0F0E0C 0%,#1A1208 50%,#0F0E0C 100%); display:flex; flex-direction:column; align-items:center; justify-content:center; z-index:10000; padding:24px; }
+.login-om { font-family:'Tiro Devanagari Hindi',serif; font-size:80px; color:var(--gold); opacity:0.2; line-height:1; animation:omPulse 3s ease-in-out infinite; margin-bottom:-10px; }
+@keyframes omPulse { 0%,100%{opacity:0.1;transform:scale(1)} 50%{opacity:0.25;transform:scale(1.05)} }
+.login-title { font-family:'Crimson Pro',serif; font-size:40px; font-weight:600; color:var(--gold2); text-align:center; margin-bottom:8px; }
+.login-title em { color:var(--saffron); font-style:italic; }
+.login-sub { font-size:15px; color:var(--text2); text-align:center; line-height:1.7; max-width:320px; margin-bottom:48px; }
+.google-btn { display:flex; align-items:center; gap:14px; background:white; border:none; border-radius:14px; padding:16px 28px; cursor:pointer; font-family:'Hind Siliguri',sans-serif; font-size:16px; font-weight:600; color:#1A1A1A; box-shadow:0 8px 32px rgba(0,0,0,0.3); transition:all 0.2s; margin-bottom:16px; width:100%; max-width:300px; justify-content:center; }
+.google-btn:hover { transform:translateY(-2px); }
+.google-btn:active { transform:scale(0.97); }
+.login-note { font-size:12px; color:var(--text3); text-align:center; line-height:1.6; max-width:280px; }
 
 /* SIDEBAR */
-.sidebar { width: 260px; background: var(--bg2); border-right: 1px solid var(--border); display: flex; flex-direction: column; flex-shrink: 0; transition: transform 0.3s ease; }
-.sidebar-logo { padding: 20px 18px 16px; border-bottom: 1px solid var(--border); display: flex; align-items: center; gap: 10px; }
-.logo-icon { width: 38px; height: 38px; background: linear-gradient(135deg, var(--saffron), var(--gold)); border-radius: 10px; display: flex; align-items: center; justify-content: center; font-size: 20px; flex-shrink: 0; box-shadow: 0 4px 12px rgba(232,114,12,0.3); }
-.logo-text { font-family: 'Crimson Pro', serif; font-size: 20px; font-weight: 600; color: var(--gold2); }
-.logo-sub { font-size: 10px; color: var(--text3); letter-spacing: 1px; text-transform: uppercase; margin-top: 1px; }
-.new-chat-btn { margin: 14px 14px 8px; background: transparent; border: 1px solid var(--border2); border-radius: 10px; padding: 10px 14px; color: var(--text2); font-family: 'Hind Siliguri', sans-serif; font-size: 13px; cursor: pointer; display: flex; align-items: center; gap: 8px; transition: all 0.2s; text-align: left; width: calc(100% - 28px); }
-.new-chat-btn:hover { background: var(--bg3); color: var(--gold2); border-color: rgba(212,168,67,0.3); }
-.sidebar-section { padding: 6px 14px 4px; font-size: 10px; font-weight: 700; letter-spacing: 1.5px; text-transform: uppercase; color: var(--text3); margin-top: 8px; }
-.sidebar-history { flex: 1; overflow-y: auto; padding: 0 8px; }
-.sidebar-history::-webkit-scrollbar { width: 3px; }
-.sidebar-history::-webkit-scrollbar-thumb { background: var(--border2); border-radius: 2px; }
-.history-item { padding: 9px 10px; border-radius: 8px; cursor: pointer; font-size: 13px; color: var(--text2); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; transition: all 0.15s; display: flex; align-items: center; gap: 8px; }
-.history-item:hover { background: var(--bg3); color: var(--text); }
-.history-item.active { background: var(--bg4); color: var(--gold); }
-.sidebar-footer { padding: 12px 14px; border-top: 1px solid var(--border); }
-.model-badge { display: flex; align-items: center; gap: 8px; background: var(--bg3); border: 1px solid var(--border); border-radius: 10px; padding: 10px 12px; }
-.model-dot { width: 7px; height: 7px; background: var(--green); border-radius: 50%; box-shadow: 0 0 8px var(--green); flex-shrink: 0; animation: dotPulse 2s ease-in-out infinite; }
-@keyframes dotPulse { 0%,100% { opacity:1; } 50% { opacity:0.3; } }
+.sidebar { width:260px; background:var(--bg2); border-right:1px solid var(--border); display:flex; flex-direction:column; flex-shrink:0; transition:transform 0.3s; }
+.sidebar-logo { padding:20px 18px 16px; border-bottom:1px solid var(--border); display:flex; align-items:center; gap:10px; }
+.logo-icon { width:38px; height:38px; background:linear-gradient(135deg,var(--saffron),var(--gold)); border-radius:10px; display:flex; align-items:center; justify-content:center; font-size:20px; flex-shrink:0; }
+.logo-text { font-family:'Crimson Pro',serif; font-size:20px; font-weight:600; color:var(--gold2); }
+.logo-sub { font-size:10px; color:var(--text3); letter-spacing:1px; text-transform:uppercase; margin-top:1px; }
+.new-chat-btn { margin:14px 14px 8px; background:transparent; border:1px solid var(--border2); border-radius:10px; padding:10px 14px; color:var(--text2); font-family:'Hind Siliguri',sans-serif; font-size:13px; cursor:pointer; display:flex; align-items:center; gap:8px; transition:all 0.2s; width:calc(100% - 28px); }
+.new-chat-btn:hover { background:var(--bg3); color:var(--gold2); }
+.sidebar-section { padding:6px 14px 4px; font-size:10px; font-weight:700; letter-spacing:1.5px; text-transform:uppercase; color:var(--text3); margin-top:8px; }
+.sidebar-history { flex:1; overflow-y:auto; padding:0 8px; }
+.sidebar-history::-webkit-scrollbar { width:3px; }
+.sidebar-history::-webkit-scrollbar-thumb { background:var(--border2); border-radius:2px; }
+.history-item { padding:9px 10px; border-radius:8px; cursor:pointer; font-size:13px; color:var(--text2); white-space:nowrap; overflow:hidden; text-overflow:ellipsis; transition:all 0.15s; display:flex; align-items:center; gap:8px; }
+.history-item:hover { background:var(--bg3); color:var(--text); }
+.history-item.active { background:var(--bg4); color:var(--gold); }
+.history-del { margin-left:auto; opacity:0; font-size:12px; color:var(--text3); padding:2px 6px; cursor:pointer; flex-shrink:0; }
+.history-item:hover .history-del { opacity:1; }
+.history-del:hover { color:var(--red); }
+.user-profile { padding:12px 14px; border-top:1px solid var(--border); display:flex; align-items:center; gap:10px; }
+.user-info { flex:1; min-width:0; }
+.user-name { font-size:13px; font-weight:600; color:var(--text); white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+.user-email { font-size:10px; color:var(--text3); white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+.logout-btn { background:none; border:1px solid var(--border); border-radius:6px; padding:4px 8px; font-size:11px; color:var(--text3); cursor:pointer; flex-shrink:0; transition:all 0.2s; font-family:'Hind Siliguri',sans-serif; }
+.logout-btn:hover { border-color:var(--red); color:var(--red); }
 
 /* MAIN */
-.main { flex: 1; display: flex; flex-direction: column; min-width: 0; }
-.topbar { padding: 14px 20px; border-bottom: 1px solid var(--border); display: flex; align-items: center; gap: 12px; background: var(--bg); flex-shrink: 0; }
-.menu-btn { display: none; background: none; border: none; color: var(--text2); font-size: 22px; cursor: pointer; padding: 4px; }
-.topbar-title { font-family: 'Crimson Pro', serif; font-size: 18px; color: var(--text2); flex: 1; }
-.topbar-title span { color: var(--gold); }
-.topbar-lang { display: flex; gap: 6px; }
-.lang-btn { background: none; border: 1px solid var(--border); border-radius: 6px; padding: 5px 10px; font-size: 11px; color: var(--text3); cursor: pointer; font-family: 'Hind Siliguri', sans-serif; transition: all 0.2s; }
-.lang-btn.active, .lang-btn:hover { border-color: var(--gold); color: var(--gold); background: rgba(212,168,67,0.06); }
-
-/* MESSAGES */
-.messages { flex: 1; overflow-y: auto; scroll-behavior: smooth; }
-.messages::-webkit-scrollbar { width: 4px; }
-.messages::-webkit-scrollbar-thumb { background: var(--border2); border-radius: 2px; }
-
-/* WELCOME */
-.welcome { display: flex; flex-direction: column; align-items: center; justify-content: center; min-height: 100%; padding: 40px 24px; text-align: center; }
-.welcome-om { font-family: 'Tiro Devanagari Hindi', serif; font-size: 80px; color: var(--gold); opacity: 0.12; line-height: 1; margin-bottom: -10px; animation: omPulse 4s ease-in-out infinite; }
-@keyframes omPulse { 0%,100% { opacity:0.08; transform:scale(1); } 50% { opacity:0.18; transform:scale(1.03); } }
-.welcome-title { font-family: 'Crimson Pro', serif; font-size: 34px; font-weight: 600; color: var(--cream); margin-bottom: 10px; line-height: 1.3; }
-.welcome-title em { color: var(--gold2); font-style: italic; }
-.welcome-sub { font-size: 15px; color: var(--text2); line-height: 1.7; max-width: 480px; margin-bottom: 36px; }
-.suggestions { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; width: 100%; max-width: 560px; }
-.suggestion-card { background: var(--bg2); border: 1px solid var(--border); border-radius: 14px; padding: 14px 16px; cursor: pointer; text-align: left; transition: all 0.2s; display: flex; flex-direction: column; gap: 4px; }
-.suggestion-card:hover { border-color: rgba(212,168,67,0.3); background: var(--bg3); transform: translateY(-2px); box-shadow: 0 6px 24px var(--shadow); }
-.suggestion-icon { font-size: 22px; margin-bottom: 4px; }
-.suggestion-text { font-size: 13px; color: var(--text); line-height: 1.4; font-weight: 500; }
-.suggestion-sub { font-size: 11px; color: var(--text3); }
-
-/* MSG */
-.msg-row { padding: 20px 0; border-bottom: 1px solid rgba(255,220,100,0.04); animation: msgIn 0.3s ease; }
-@keyframes msgIn { from { opacity:0; transform:translateY(8px); } to { opacity:1; transform:translateY(0); } }
-.msg-inner { max-width: 760px; margin: 0 auto; padding: 0 20px; display: flex; gap: 14px; align-items: flex-start; }
-.msg-avatar { width: 34px; height: 34px; border-radius: 9px; display: flex; align-items: center; justify-content: center; font-size: 18px; flex-shrink: 0; margin-top: 2px; }
-.msg-avatar.user { background: var(--bg4); border: 1px solid var(--border); font-size: 13px; color: var(--text2); font-weight: 700; font-family: 'Hind Siliguri', sans-serif; }
-.msg-avatar.ai { background: linear-gradient(135deg, var(--saffron), var(--gold)); box-shadow: 0 2px 12px rgba(232,114,12,0.3); }
-.msg-content { flex: 1; min-width: 0; }
-.msg-name { font-size: 11px; font-weight: 700; color: var(--text3); letter-spacing: 1px; margin-bottom: 7px; text-transform: uppercase; }
-.msg-name.ai { color: var(--gold); }
-.msg-text { font-size: 15px; line-height: 1.85; color: var(--text); }
-.msg-text.user-text { color: var(--cream2); }
-.msg-text h3 { font-family: 'Crimson Pro', serif; font-size: 19px; color: var(--gold2); margin: 18px 0 9px; font-weight: 600; border-bottom: 1px solid var(--border); padding-bottom: 7px; }
-.msg-text h3:first-child { margin-top: 0; }
-.msg-text p { margin-bottom: 12px; }
-.msg-text p:last-child { margin-bottom: 0; }
-.msg-text ul, .msg-text ol { padding-left: 20px; margin: 8px 0 12px; }
-.msg-text li { margin-bottom: 7px; line-height: 1.75; }
-.msg-text strong { color: var(--gold3); font-weight: 600; }
-.msg-text em { color: var(--cream2); font-style: italic; }
-.shloka-block { background: rgba(212,168,67,0.06); border-left: 3px solid var(--gold); border-radius: 0 12px 12px 0; padding: 14px 18px; margin: 14px 0; font-family: 'Tiro Devanagari Hindi', serif; font-size: 17px; color: var(--gold2); line-height: 2; }
-.msg-actions { display: flex; gap: 8px; margin-top: 12px; }
-.msg-action-btn { background: none; border: 1px solid var(--border); border-radius: 7px; padding: 5px 12px; font-size: 12px; color: var(--text3); cursor: pointer; font-family: 'Hind Siliguri', sans-serif; transition: all 0.15s; }
-.msg-action-btn:hover { border-color: var(--border2); color: var(--text2); background: var(--bg3); }
-
-/* TYPING */
-.typing-row { padding: 20px 0; }
-.typing-inner { max-width: 760px; margin: 0 auto; padding: 0 20px; display: flex; gap: 14px; align-items: center; }
-.typing-dots { display: flex; gap: 5px; align-items: center; padding: 6px 0; }
-.typing-dot { width: 7px; height: 7px; background: var(--gold); border-radius: 50%; animation: typingBounce 1.2s ease-in-out infinite; opacity: 0.5; }
-.typing-dot:nth-child(2) { animation-delay: 0.2s; }
-.typing-dot:nth-child(3) { animation-delay: 0.4s; }
-@keyframes typingBounce { 0%,60%,100% { transform:translateY(0); opacity:0.3; } 30% { transform:translateY(-9px); opacity:1; } }
-
-/* INPUT */
-.input-area { padding: 16px 20px 22px; border-top: 1px solid var(--border); background: var(--bg); flex-shrink: 0; }
-.input-wrap { max-width: 760px; margin: 0 auto; position: relative; }
-.input-box { width: 100%; background: var(--bg2); border: 1px solid var(--border2); border-radius: 16px; padding: 14px 58px 14px 18px; color: var(--text); font-family: 'Hind Siliguri', sans-serif; font-size: 15px; resize: none; min-height: 54px; max-height: 200px; outline: none; line-height: 1.65; transition: border-color 0.2s, box-shadow 0.2s; overflow-y: auto; }
-.input-box::placeholder { color: var(--text3); }
-.input-box:focus { border-color: rgba(212,168,67,0.45); box-shadow: 0 0 0 3px rgba(212,168,67,0.07); }
-.input-box::-webkit-scrollbar { width: 3px; }
-.send-btn { position: absolute; right: 10px; bottom: 10px; width: 36px; height: 36px; background: linear-gradient(135deg, var(--saffron), var(--gold)); border: none; border-radius: 10px; cursor: pointer; display: flex; align-items: center; justify-content: center; transition: all 0.2s; box-shadow: 0 3px 12px rgba(232,114,12,0.35); }
-.send-btn:hover { transform: scale(1.06); box-shadow: 0 5px 16px rgba(232,114,12,0.45); }
-.send-btn:active { transform: scale(0.95); }
-.send-btn:disabled { opacity: 0.35; cursor: not-allowed; transform: none; }
-.send-btn svg { width: 16px; height: 16px; fill: white; }
-.input-footer { display: flex; justify-content: space-between; align-items: center; margin-top: 8px; padding: 0 4px; }
-.input-hint { font-size: 11px; color: var(--text3); }
-.char-count { font-size: 11px; color: var(--text3); }
-
-/* ERROR */
-.error-msg { background: rgba(200,80,106,0.1); border: 1px solid rgba(200,80,106,0.2); border-radius: 10px; padding: 12px 16px; font-size: 13px; color: #E8849A; line-height: 1.6; margin-top: 8px; }
-
-/* MOBILE */
-.sidebar-overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.55); z-index: 99; }
-@media (max-width: 700px) {
-  .sidebar { position: fixed; left: 0; top: 0; bottom: 0; z-index: 100; transform: translateX(-100%); }
-  .sidebar.open { transform: translateX(0); }
-  .sidebar-overlay.show { display: block; }
-  .menu-btn { display: block; }
-  .suggestions { grid-template-columns: 1fr; }
-  .topbar-lang { display: none; }
-  .msg-inner { padding: 0 14px; }
-  .input-area { padding: 12px 14px 18px; }
-  .welcome { padding: 24px 16px; }
-  .welcome-om { font-size: 56px; }
-  .welcome-title { font-size: 26px; }
+.main { flex:1; display:flex; flex-direction:column; min-width:0; }
+.topbar { padding:14px 20px; border-bottom:1px solid var(--border); display:flex; align-items:center; gap:12px; background:var(--bg); flex-shrink:0; }
+.menu-btn { display:none; background:none; border:none; color:var(--text2); font-size:22px; cursor:pointer; padding:4px; }
+.topbar-title { font-family:'Crimson Pro',serif; font-size:18px; color:var(--text2); flex:1; }
+.topbar-title span { color:var(--gold); }
+.topbar-lang { display:flex; gap:6px; }
+.lang-btn { background:none; border:1px solid var(--border); border-radius:6px; padding:5px 10px; font-size:11px; color:var(--text3); cursor:pointer; font-family:'Hind Siliguri',sans-serif; transition:all 0.2s; }
+.lang-btn.active,.lang-btn:hover { border-color:var(--gold); color:var(--gold); background:rgba(212,168,67,0.06); }
+.messages { flex:1; overflow-y:auto; scroll-behavior:smooth; }
+.messages::-webkit-scrollbar { width:4px; }
+.messages::-webkit-scrollbar-thumb { background:var(--border2); border-radius:2px; }
+.welcome { display:flex; flex-direction:column; align-items:center; justify-content:center; min-height:100%; padding:40px 24px; text-align:center; }
+.welcome-om { font-family:'Tiro Devanagari Hindi',serif; font-size:80px; color:var(--gold); opacity:0.12; line-height:1; margin-bottom:-10px; animation:omPulse 4s ease-in-out infinite; }
+.welcome-title { font-family:'Crimson Pro',serif; font-size:34px; font-weight:600; color:var(--cream); margin-bottom:10px; line-height:1.3; }
+.welcome-title em { color:var(--gold2); font-style:italic; }
+.welcome-sub { font-size:15px; color:var(--text2); line-height:1.7; max-width:480px; margin-bottom:36px; }
+.suggestions { display:grid; grid-template-columns:1fr 1fr; gap:10px; width:100%; max-width:560px; }
+.suggestion-card { background:var(--bg2); border:1px solid var(--border); border-radius:14px; padding:14px 16px; cursor:pointer; text-align:left; transition:all 0.2s; display:flex; flex-direction:column; gap:4px; }
+.suggestion-card:hover { border-color:rgba(212,168,67,0.3); background:var(--bg3); transform:translateY(-2px); }
+.suggestion-icon { font-size:22px; margin-bottom:4px; }
+.suggestion-text { font-size:13px; color:var(--text); line-height:1.4; font-weight:500; }
+.suggestion-sub { font-size:11px; color:var(--text3); }
+.msg-row { padding:20px 0; border-bottom:1px solid rgba(255,220,100,0.04); animation:msgIn 0.3s ease; }
+@keyframes msgIn { from{opacity:0;transform:translateY(8px)} to{opacity:1;transform:translateY(0)} }
+.msg-inner { max-width:760px; margin:0 auto; padding:0 20px; display:flex; gap:14px; align-items:flex-start; }
+.msg-avatar { width:34px; height:34px; border-radius:9px; display:flex; align-items:center; justify-content:center; font-size:18px; flex-shrink:0; margin-top:2px; overflow:hidden; }
+.msg-avatar.user { background:var(--bg4); border:1px solid var(--border); font-size:13px; color:var(--text2); font-weight:700; }
+.msg-avatar.ai { background:linear-gradient(135deg,var(--saffron),var(--gold)); }
+.msg-content { flex:1; min-width:0; }
+.msg-name { font-size:11px; font-weight:700; color:var(--text3); letter-spacing:1px; margin-bottom:7px; text-transform:uppercase; }
+.msg-name.ai { color:var(--gold); }
+.msg-text { font-size:15px; line-height:1.85; color:var(--text); }
+.msg-text.user-text { color:var(--cream2); }
+.msg-text h3 { font-family:'Crimson Pro',serif; font-size:19px; color:var(--gold2); margin:18px 0 9px; font-weight:600; border-bottom:1px solid var(--border); padding-bottom:7px; }
+.msg-text h3:first-child { margin-top:0; }
+.msg-text p { margin-bottom:12px; }
+.msg-text p:last-child { margin-bottom:0; }
+.msg-text ul,.msg-text ol { padding-left:20px; margin:8px 0 12px; }
+.msg-text li { margin-bottom:7px; line-height:1.75; }
+.msg-text strong { color:var(--gold3); font-weight:600; }
+.msg-text em { color:var(--cream2); font-style:italic; }
+.shloka-block { background:rgba(212,168,67,0.06); border-left:3px solid var(--gold); border-radius:0 12px 12px 0; padding:14px 18px; margin:14px 0; font-family:'Tiro Devanagari Hindi',serif; font-size:17px; color:var(--gold2); line-height:2; }
+.msg-actions { display:flex; gap:8px; margin-top:12px; }
+.msg-action-btn { background:none; border:1px solid var(--border); border-radius:7px; padding:5px 12px; font-size:12px; color:var(--text3); cursor:pointer; font-family:'Hind Siliguri',sans-serif; transition:all 0.15s; }
+.msg-action-btn:hover { border-color:var(--border2); color:var(--text2); background:var(--bg3); }
+.typing-row { padding:20px 0; }
+.typing-inner { max-width:760px; margin:0 auto; padding:0 20px; display:flex; gap:14px; align-items:center; }
+.typing-dots { display:flex; gap:5px; align-items:center; padding:6px 0; }
+.typing-dot { width:7px; height:7px; background:var(--gold); border-radius:50%; animation:typingBounce 1.2s ease-in-out infinite; opacity:0.5; }
+.typing-dot:nth-child(2){animation-delay:0.2s} .typing-dot:nth-child(3){animation-delay:0.4s}
+@keyframes typingBounce { 0%,60%,100%{transform:translateY(0);opacity:0.3} 30%{transform:translateY(-9px);opacity:1} }
+.input-area { padding:16px 20px 22px; border-top:1px solid var(--border); background:var(--bg); flex-shrink:0; }
+.input-wrap { max-width:760px; margin:0 auto; position:relative; }
+.input-box { width:100%; background:var(--bg2); border:1px solid var(--border2); border-radius:16px; padding:14px 58px 14px 18px; color:var(--text); font-family:'Hind Siliguri',sans-serif; font-size:15px; resize:none; min-height:54px; max-height:200px; outline:none; line-height:1.65; transition:border-color 0.2s; overflow-y:auto; }
+.input-box::placeholder { color:var(--text3); }
+.input-box:focus { border-color:rgba(212,168,67,0.45); box-shadow:0 0 0 3px rgba(212,168,67,0.07); }
+.send-btn { position:absolute; right:10px; bottom:10px; width:36px; height:36px; background:linear-gradient(135deg,var(--saffron),var(--gold)); border:none; border-radius:10px; cursor:pointer; display:flex; align-items:center; justify-content:center; transition:all 0.2s; }
+.send-btn:hover{transform:scale(1.06)} .send-btn:active{transform:scale(0.95)} .send-btn:disabled{opacity:0.35;cursor:not-allowed;transform:none}
+.send-btn svg { width:16px; height:16px; fill:white; }
+.input-footer { display:flex; justify-content:space-between; margin-top:8px; padding:0 4px; }
+.input-hint,.char-count { font-size:11px; color:var(--text3); }
+.error-msg { background:rgba(200,80,106,0.1); border:1px solid rgba(200,80,106,0.2); border-radius:10px; padding:12px 16px; font-size:13px; color:#E8849A; line-height:1.6; margin-top:8px; }
+.loading-overlay { position:fixed; inset:0; background:rgba(15,14,12,0.8); display:flex; align-items:center; justify-content:center; z-index:9999; }
+.loading-spinner { width:40px; height:40px; border:3px solid var(--border2); border-top-color:var(--gold); border-radius:50%; animation:spin 0.8s linear infinite; }
+@keyframes spin{to{transform:rotate(360deg)}}
+.sidebar-overlay { display:none; position:fixed; inset:0; background:rgba(0,0,0,0.55); z-index:99; }
+@media(max-width:700px) {
+  .sidebar{position:fixed;left:0;top:0;bottom:0;z-index:100;transform:translateX(-100%)}
+  .sidebar.open{transform:translateX(0)} .sidebar-overlay.show{display:block}
+  .menu-btn{display:block} .suggestions{grid-template-columns:1fr}
+  .topbar-lang{display:none} .msg-inner{padding:0 14px}
+  .input-area{padding:12px 14px 18px} .welcome{padding:24px 16px}
+  .welcome-om{font-size:56px} .welcome-title{font-size:26px}
 }
 </style>
 </head>
 <body>
 
+<!-- LOGIN -->
+<div id="loginScreen">
+  <div class="login-om">ॐ</div>
+  <div class="login-title">Dharma<em>AI</em></div>
+  <div class="login-sub">সনাতন ধর্মের জ্ঞানকোষে আপনাকে স্বাগতম। লগইন করুন এবং সকল প্রশ্নের উত্তর সংরক্ষণ করুন।</div>
+  <button class="google-btn" onclick="loginWithGoogle()">
+    <svg width="24" height="24" viewBox="0 0 24 24"><path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/><path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/><path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z"/><path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"/></svg>
+    Gmail দিয়ে প্রবেশ করুন
+  </button>
+  <p class="login-note">🔒 আপনার তথ্য সম্পূর্ণ নিরাপদ। শুধু Chat History সংরক্ষণ করা হবে।</p>
+</div>
+
+<div class="loading-overlay" id="loadingOverlay" style="display:none"><div class="loading-spinner"></div></div>
 <div class="sidebar-overlay" id="sidebarOverlay" onclick="closeSidebar()"></div>
 
 <div class="app">
-  <!-- SIDEBAR -->
   <div class="sidebar" id="sidebar">
     <div class="sidebar-logo">
       <div class="logo-icon">🕉️</div>
-      <div>
-        <div class="logo-text">DharmaAI</div>
-        <div class="logo-sub">সনাতন জ্ঞানকোষ</div>
-      </div>
+      <div><div class="logo-text">DharmaAI</div><div class="logo-sub">সনাতন জ্ঞানকোষ</div></div>
     </div>
-
     <button class="new-chat-btn" onclick="newChat()">✏️ নতুন আলোচনা</button>
-
-    <div class="sidebar-section">সাম্প্রতিক প্রশ্ন</div>
-    <div class="sidebar-history" id="historyList">
-      <div style="padding:12px 10px;font-size:12px;color:var(--text3)">এখনো কোনো আলোচনা নেই</div>
-    </div>
-
-    <div class="sidebar-footer">
-      <div class="model-badge">
-        <div class="model-dot"></div>
-        <div>
-          <div style="font-size:13px;color:var(--gold);font-weight:700;font-family:'Crimson Pro',serif">DharmaAI</div>
-          <div style="font-size:10px;color:var(--text3);margin-top:2px;letter-spacing:0.5px">সনাতন ধর্ম জ্ঞানকোষ 🕉️</div>
-        </div>
-      </div>
+    <div class="sidebar-section">আগের আলোচনা</div>
+    <div class="sidebar-history" id="historyList"><div style="padding:12px 10px;font-size:12px;color:var(--text3)">লোড হচ্ছে...</div></div>
+    <div class="user-profile" id="userProfile">
+      <div class="msg-avatar user"><span>🙏</span></div>
+      <div class="user-info"><div class="user-name">লোড হচ্ছে...</div></div>
+      <button class="logout-btn" onclick="logout()">বের</button>
     </div>
   </div>
 
-  <!-- MAIN -->
   <div class="main">
     <div class="topbar">
       <button class="menu-btn" onclick="toggleSidebar()">☰</button>
@@ -181,57 +181,25 @@ html, body { height: 100%; background: var(--bg); font-family: 'Hind Siliguri', 
         <button class="lang-btn" onclick="setLang('hi',this)">हिंदी</button>
       </div>
     </div>
-
     <div class="messages" id="messages">
       <div class="welcome" id="welcome">
         <div class="welcome-om">ॐ</div>
         <div class="welcome-title"><em>জ্ঞান</em>-এর আলোয় আসুন</div>
         <div class="welcome-sub">সনাতন ধর্মের যেকোনো প্রশ্ন করুন — শ্লোক, পূজাপদ্ধতি, দেব-দেবী, ইতিহাস, দর্শন — সবকিছুর গোছালো উত্তর পাবেন।</div>
         <div class="suggestions">
-          <div class="suggestion-card" onclick="sendSuggestion(this)">
-            <div class="suggestion-icon">🕉️</div>
-            <div class="suggestion-text">গায়ত্রী মন্ত্রের অর্থ ও মহিমা ব্যাখ্যা করুন</div>
-            <div class="suggestion-sub">মন্ত্র · অর্থ</div>
-          </div>
-          <div class="suggestion-card" onclick="sendSuggestion(this)">
-            <div class="suggestion-icon">📿</div>
-            <div class="suggestion-text">একাদশী ব্রত কেন পালন করা হয়?</div>
-            <div class="suggestion-sub">ব্রত · নিয়মাবলী</div>
-          </div>
-          <div class="suggestion-card" onclick="sendSuggestion(this)">
-            <div class="suggestion-icon">🌸</div>
-            <div class="suggestion-text">শ্রীমদ্ভগবদ্গীতার কর্মযোগ কী?</div>
-            <div class="suggestion-sub">গীতা · দর্শন</div>
-          </div>
-          <div class="suggestion-card" onclick="sendSuggestion(this)">
-            <div class="suggestion-icon">🛕</div>
-            <div class="suggestion-text">দুর্গাপূজার ইতিহাস ও তাৎপর্য</div>
-            <div class="suggestion-sub">পূজা · উৎসব</div>
-          </div>
-          <div class="suggestion-card" onclick="sendSuggestion(this)">
-            <div class="suggestion-icon">🐚</div>
-            <div class="suggestion-text">শিবলিঙ্গ পূজার সঠিক নিয়ম কী?</div>
-            <div class="suggestion-sub">পূজাপদ্ধতি</div>
-          </div>
-          <div class="suggestion-card" onclick="sendSuggestion(this)">
-            <div class="suggestion-icon">📖</div>
-            <div class="suggestion-text">রামায়ণ ও মহাভারতের মূল পার্থক্য</div>
-            <div class="suggestion-sub">শাস্ত্র · ইতিহাস</div>
-          </div>
+          <div class="suggestion-card" onclick="sendSuggestion(this)"><div class="suggestion-icon">🕉️</div><div class="suggestion-text">গায়ত্রী মন্ত্রের অর্থ ও মহিমা ব্যাখ্যা করুন</div><div class="suggestion-sub">মন্ত্র · অর্থ</div></div>
+          <div class="suggestion-card" onclick="sendSuggestion(this)"><div class="suggestion-icon">📿</div><div class="suggestion-text">একাদশী ব্রত কেন পালন করা হয়?</div><div class="suggestion-sub">ব্রত · নিয়মাবলী</div></div>
+          <div class="suggestion-card" onclick="sendSuggestion(this)"><div class="suggestion-icon">🌸</div><div class="suggestion-text">শ্রীমদ্ভগবদ্গীতার কর্মযোগ কী?</div><div class="suggestion-sub">গীতা · দর্শন</div></div>
+          <div class="suggestion-card" onclick="sendSuggestion(this)"><div class="suggestion-icon">🛕</div><div class="suggestion-text">দুর্গাপূজার ইতিহাস ও তাৎপর্য</div><div class="suggestion-sub">পূজা · উৎসব</div></div>
+          <div class="suggestion-card" onclick="sendSuggestion(this)"><div class="suggestion-icon">🐚</div><div class="suggestion-text">শিবলিঙ্গ পূজার সঠিক নিয়ম কী?</div><div class="suggestion-sub">পূজাপদ্ধতি</div></div>
+          <div class="suggestion-card" onclick="sendSuggestion(this)"><div class="suggestion-icon">📖</div><div class="suggestion-text">রামায়ণ ও মহাভারতের মূল পার্থক্য</div><div class="suggestion-sub">শাস্ত্র · ইতিহাস</div></div>
         </div>
       </div>
     </div>
-
     <div class="input-area">
       <div class="input-wrap">
-        <textarea class="input-box" id="inputBox"
-          placeholder="সনাতন ধর্ম সম্পর্কে যেকোনো প্রশ্ন করুন..."
-          rows="1"
-          onkeydown="handleKey(event)"
-          oninput="autoResize(this);updateCharCount(this)"></textarea>
-        <button class="send-btn" id="sendBtn" onclick="sendMessage()">
-          <svg viewBox="0 0 24 24"><path d="M2.01 21L23 12 2.01 3 2 10l15 2-15 2z"/></svg>
-        </button>
+        <textarea class="input-box" id="inputBox" placeholder="সনাতন ধর্ম সম্পর্কে যেকোনো প্রশ্ন করুন..." rows="1" onkeydown="handleKey(event)" oninput="autoResize(this);updateCharCount(this)"></textarea>
+        <button class="send-btn" id="sendBtn" onclick="sendMessage()"><svg viewBox="0 0 24 24"><path d="M2.01 21L23 12 2.01 3 2 10l15 2-15 2z"/></svg></button>
       </div>
       <div class="input-footer">
         <span class="input-hint">Enter = পাঠান · Shift+Enter = নতুন লাইন</span>
@@ -242,270 +210,196 @@ html, body { height: 100%; background: var(--bg); font-family: 'Hind Siliguri', 
 </div>
 
 <script>
-  // ✅ আপনার Cloudflare Worker URL
-  const WORKER_URL = 'https://dharma-ai.prakashofficialbd.workers.dev';
+// ✅ Firebase Init
+const firebaseConfig = {
+  apiKey: "AIzaSyCr1MZ6eHbXDbyIquZyLnED5rT-3kGPLlU",
+  authDomain: "dharma-ai-7549e.firebaseapp.com",
+  projectId: "dharma-ai-7549e",
+  storageBucket: "dharma-ai-7549e.firebasestorage.app",
+  messagingSenderId: "285777595299",
+  appId: "1:285777595299:web:4186a8358db41f4f73e816"
+};
 
-  let language = 'bn';
-  let isLoading = false;
-  let chatHistory = [];
-  let allChats = [];
+// Firebase initialize
+firebase.initializeApp(firebaseConfig);
+const auth = firebase.auth();
+const db = firebase.firestore();
 
-  try {
-    allChats = JSON.parse(localStorage.getItem('dharmaai_chats') || '[]');
-  } catch(e) { allChats = []; }
+// ✅ Worker URL
+const WORKER_URL = 'https://dharma-ai.prakashofficialbd.workers.dev';
 
-  renderHistory();
-  document.getElementById('inputBox').focus();
+let currentUser = null, language = 'bn', isLoading = false;
+let chatHistory = [], currentChatId = null;
 
-  // LANGUAGE
-  function setLang(lang, btn) {
-    language = lang;
-    document.querySelectorAll('.lang-btn').forEach(b => b.classList.remove('active'));
-    btn.classList.add('active');
-    const ph = {
-      bn: 'সনাতন ধর্ম সম্পর্কে যেকোনো প্রশ্ন করুন...',
-      en: 'Ask anything about Sanatan Dharma...',
-      hi: 'सनातन धर्म के बारे में कुछ भी पूछें...'
-    };
-    document.getElementById('inputBox').placeholder = ph[lang];
+// Auth State Watch
+auth.onAuthStateChanged(function(user) {
+  if (user) {
+    currentUser = user;
+    document.getElementById('loginScreen').style.display = 'none';
+    updateUserProfile(user);
+    loadChatHistory();
+  } else {
+    currentUser = null;
+    document.getElementById('loginScreen').style.display = 'flex';
   }
+});
 
-  // INPUT
-  function handleKey(e) {
-    if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); sendMessage(); }
-  }
-  function autoResize(el) {
-    el.style.height = 'auto';
-    el.style.height = Math.min(el.scrollHeight, 200) + 'px';
-  }
-  function updateCharCount(el) {
-    document.getElementById('charCount').textContent = el.value.length + ' / 1000';
-  }
+// Login
+function loginWithGoogle() {
+  showLoading();
+  var provider = new firebase.auth.GoogleAuthProvider();
+  auth.signInWithPopup(provider)
+    .then(function() { hideLoading(); })
+    .catch(function(err) { hideLoading(); alert('Login সমস্যা: ' + err.message); });
+}
 
-  // SIDEBAR
-  function toggleSidebar() {
-    document.getElementById('sidebar').classList.toggle('open');
-    document.getElementById('sidebarOverlay').classList.toggle('show');
-  }
-  function closeSidebar() {
-    document.getElementById('sidebar').classList.remove('open');
-    document.getElementById('sidebarOverlay').classList.remove('show');
-  }
+function logout() {
+  if (confirm('লগআউট করবেন?')) { auth.signOut(); newChat(); }
+}
 
-  // HISTORY
-  function renderHistory() {
-    const list = document.getElementById('historyList');
-    if (!allChats.length) {
-      list.innerHTML = '<div style="padding:12px 10px;font-size:12px;color:var(--text3)">এখনো কোনো আলোচনা নেই</div>';
-      return;
-    }
-    list.innerHTML = allChats.slice().reverse().map((c, i) =>
-      '<div class="history-item" onclick="loadChat(' + (allChats.length - 1 - i) + ')"><span>🕉️</span><span>' + c.title + '</span></div>'
-    ).join('');
-  }
+function updateUserProfile(user) {
+  document.getElementById('userProfile').innerHTML =
+    '<div class="msg-avatar user">' +
+    (user.photoURL ? '<img src="'+user.photoURL+'" style="width:34px;height:34px;border-radius:9px;object-fit:cover">' : '<span>'+(user.displayName||'আ').charAt(0)+'</span>') +
+    '</div><div class="user-info"><div class="user-name">'+(user.displayName||'ব্যবহারকারী')+'</div><div style="font-size:10px;color:var(--text3)">'+(user.email||'')+'</div></div>' +
+    '<button class="logout-btn" onclick="logout()">বের</button>';
+}
 
-  function saveChat(title) {
-    allChats.push({ title: title.substring(0, 38), messages: [...chatHistory], time: Date.now() });
-    if (allChats.length > 20) allChats.shift();
-    try { localStorage.setItem('dharmaai_chats', JSON.stringify(allChats)); } catch(e){}
-    renderHistory();
-  }
+function showLoading() { document.getElementById('loadingOverlay').style.display='flex'; }
+function hideLoading() { document.getElementById('loadingOverlay').style.display='none'; }
 
-  function loadChat(i) {
-    const chat = allChats[i];
-    if (!chat) return;
-    chatHistory = [...chat.messages];
-    const msgs = document.getElementById('messages');
-    msgs.innerHTML = '';
-    chatHistory.forEach(m => appendMessage(m.role === 'user' ? 'user' : 'ai', m.content, false));
-    closeSidebar();
-  }
+function setLang(lang, btn) {
+  language = lang;
+  document.querySelectorAll('.lang-btn').forEach(function(b){b.classList.remove('active');});
+  btn.classList.add('active');
+  var ph = {bn:'সনাতন ধর্ম সম্পর্কে যেকোনো প্রশ্ন করুন...',en:'Ask anything about Sanatan Dharma...',hi:'सनातन धर्म के बारे में कुछ भी पूछें...'};
+  document.getElementById('inputBox').placeholder = ph[lang];
+}
 
-  // NEW CHAT
-  function newChat() {
-    chatHistory = [];
-    document.getElementById('messages').innerHTML = getWelcomeHTML();
-    document.getElementById('inputBox').value = '';
-    document.getElementById('inputBox').style.height = 'auto';
-    closeSidebar();
-  }
+function handleKey(e) { if(e.key==='Enter'&&!e.shiftKey){e.preventDefault();sendMessage();} }
+function autoResize(el) { el.style.height='auto'; el.style.height=Math.min(el.scrollHeight,200)+'px'; }
+function updateCharCount(el) { document.getElementById('charCount').textContent=el.value.length+' / 1000'; }
+function toggleSidebar() { document.getElementById('sidebar').classList.toggle('open'); document.getElementById('sidebarOverlay').classList.toggle('show'); }
+function closeSidebar() { document.getElementById('sidebar').classList.remove('open'); document.getElementById('sidebarOverlay').classList.remove('show'); }
 
-  function getWelcomeHTML() {
-    return '<div class="welcome" id="welcome">' +
-      '<div class="welcome-om">ॐ</div>' +
-      '<div class="welcome-title"><em>জ্ঞান</em>-এর আলোয় আসুন</div>' +
-      '<div class="welcome-sub">সনাতন ধর্মের যেকোনো প্রশ্ন করুন — শ্লোক, পূজাপদ্ধতি, দেব-দেবী, ইতিহাস, দর্শন — সবকিছুর গোছালো উত্তর পাবেন।</div>' +
-      '<div class="suggestions">' +
-      '<div class="suggestion-card" onclick="sendSuggestion(this)"><div class="suggestion-icon">🕉️</div><div class="suggestion-text">গায়ত্রী মন্ত্রের অর্থ ও মহিমা ব্যাখ্যা করুন</div><div class="suggestion-sub">মন্ত্র · অর্থ</div></div>' +
-      '<div class="suggestion-card" onclick="sendSuggestion(this)"><div class="suggestion-icon">📿</div><div class="suggestion-text">একাদশী ব্রত কেন পালন করা হয়?</div><div class="suggestion-sub">ব্রত · নিয়মাবলী</div></div>' +
-      '<div class="suggestion-card" onclick="sendSuggestion(this)"><div class="suggestion-icon">🌸</div><div class="suggestion-text">শ্রীমদ্ভগবদ্গীতার কর্মযোগ কী?</div><div class="suggestion-sub">গীতা · দর্শন</div></div>' +
-      '<div class="suggestion-card" onclick="sendSuggestion(this)"><div class="suggestion-icon">🛕</div><div class="suggestion-text">দুর্গাপূজার ইতিহাস ও তাৎপর্য</div><div class="suggestion-sub">পূজা · উৎসব</div></div>' +
-      '<div class="suggestion-card" onclick="sendSuggestion(this)"><div class="suggestion-icon">🐚</div><div class="suggestion-text">শিবলিঙ্গ পূজার সঠিক নিয়ম কী?</div><div class="suggestion-sub">পূজাপদ্ধতি</div></div>' +
-      '<div class="suggestion-card" onclick="sendSuggestion(this)"><div class="suggestion-icon">📖</div><div class="suggestion-text">রামায়ণ ও মহাভারতের মূল পার্থক্য</div><div class="suggestion-sub">শাস্ত্র · ইতিহাস</div></div>' +
-      '</div></div>';
-  }
-
-  // SEND
-  function sendSuggestion(el) {
-    document.getElementById('inputBox').value = el.querySelector('.suggestion-text').textContent;
-    sendMessage();
-  }
-
-  async function sendMessage() {
-    const input = document.getElementById('inputBox');
-    const text = input.value.trim();
-    if (!text || isLoading) return;
-
-    const welcome = document.getElementById('welcome');
-    if (welcome) welcome.remove();
-
-    appendMessage('user', text);
-    input.value = '';
-    input.style.height = 'auto';
-    document.getElementById('charCount').textContent = '0 / 1000';
-    chatHistory.push({ role: 'user', content: text });
-
-    isLoading = true;
-    document.getElementById('sendBtn').disabled = true;
-    const typingId = 'typing_' + Date.now();
-    appendTyping(typingId);
-
-    try {
-      const response = await fetch(WORKER_URL, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ messages: chatHistory })
+// Firestore
+function loadChatHistory() {
+  if (!currentUser) return;
+  db.collection('users').doc(currentUser.uid).collection('chats')
+    .orderBy('updatedAt','desc').limit(20)
+    .onSnapshot(function(snap) {
+      var list = document.getElementById('historyList');
+      if (snap.empty) { list.innerHTML='<div style="padding:12px 10px;font-size:12px;color:var(--text3)">এখনো কোনো আলোচনা নেই</div>'; return; }
+      list.innerHTML = '';
+      snap.forEach(function(doc) {
+        var d = doc.data();
+        var el = document.createElement('div');
+        el.className = 'history-item'+(doc.id===currentChatId?' active':'');
+        el.innerHTML = '<span>🕉️</span><span style="flex:1;overflow:hidden;text-overflow:ellipsis">'+(d.title||'আলোচনা')+'</span><span class="history-del" onclick="deleteChat(event,\''+doc.id+'\')">✕</span>';
+        el.onclick = function(){loadChat(doc.id,d);};
+        list.appendChild(el);
       });
-
-      removeTyping(typingId);
-
-      const data = await response.json();
-
-      if (!response.ok || data.error) {
-        throw new Error(data.error || 'সার্ভার error ' + response.status);
-      }
-
-      const reply = data.reply || 'উত্তর পাওয়া যায়নি।';
-      chatHistory.push({ role: 'assistant', content: reply });
-      appendMessage('ai', reply);
-
-      if (chatHistory.length === 2) saveChat(text);
-
-    } catch (err) {
-      removeTyping(typingId);
-      appendError(err.message);
-    } finally {
-      isLoading = false;
-      document.getElementById('sendBtn').disabled = false;
-      document.getElementById('inputBox').focus();
-    }
-  }
-
-  // DOM HELPERS
-  function appendMessage(role, text, scroll) {
-    if (scroll === undefined) scroll = true;
-    const msgs = document.getElementById('messages');
-    const row = document.createElement('div');
-    row.className = 'msg-row';
-    const isAI = role === 'ai';
-    row.innerHTML =
-      '<div class="msg-inner">' +
-        '<div class="msg-avatar ' + role + '">' + (isAI ? '🕉️' : 'আ') + '</div>' +
-        '<div class="msg-content">' +
-          '<div class="msg-name ' + (isAI ? 'ai' : '') + '">' + (isAI ? 'DharmaAI' : 'আপনি') + '</div>' +
-          '<div class="msg-text ' + (!isAI ? 'user-text' : '') + '">' + (isAI ? formatResponse(text) : escHtml(text)) + '</div>' +
-          (isAI ? '<div class="msg-actions">' +
-            '<button class="msg-action-btn" onclick="copyMsg(this)" data-t="' + escAttr(text) + '">📋 কপি</button>' +
-            '<button class="msg-action-btn" onclick="speakMsg(\'' + escAttr(text.substring(0, 400)) + '\')">🔊 পড়ুন</button>' +
-          '</div>' : '') +
-        '</div>' +
-      '</div>';
-    msgs.appendChild(row);
-    if (scroll) row.scrollIntoView({ behavior: 'smooth', block: 'end' });
-  }
-
-  function appendTyping(id) {
-    const msgs = document.getElementById('messages');
-    const row = document.createElement('div');
-    row.className = 'typing-row';
-    row.id = id;
-    row.innerHTML =
-      '<div class="typing-inner">' +
-        '<div class="msg-avatar ai">🕉️</div>' +
-        '<div class="typing-dots">' +
-          '<div class="typing-dot"></div>' +
-          '<div class="typing-dot"></div>' +
-          '<div class="typing-dot"></div>' +
-        '</div>' +
-      '</div>';
-    msgs.appendChild(row);
-    row.scrollIntoView({ behavior: 'smooth', block: 'end' });
-  }
-
-  function removeTyping(id) {
-    const el = document.getElementById(id);
-    if (el) el.remove();
-  }
-
-  function appendError(msg) {
-    const msgs = document.getElementById('messages');
-    const row = document.createElement('div');
-    row.className = 'msg-row';
-    row.innerHTML =
-      '<div class="msg-inner">' +
-        '<div class="msg-avatar ai">🕉️</div>' +
-        '<div class="msg-content">' +
-          '<div class="msg-name ai">DharmaAI</div>' +
-          '<div class="error-msg">❌ ' + escHtml(msg) + '<br><br>সমাধান: Cloudflare Worker-এ API Key সঠিক আছে কিনা চেক করুন।</div>' +
-        '</div>' +
-      '</div>';
-    msgs.appendChild(row);
-    row.scrollIntoView({ behavior: 'smooth', block: 'end' });
-  }
-
-  // FORMAT
-  function formatResponse(text) {
-    return text
-      .replace(/^### (.+)$/gm, '<h3>$1</h3>')
-      .replace(/^## (.+)$/gm, '<h3>$1</h3>')
-      .replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>')
-      .replace(/\*(.+?)\*/g, '<em>$1</em>')
-      .replace(/^> (.+)$/gm, '<div class="shloka-block">$1</div>')
-      .replace(/^[-•] (.+)$/gm, '<li>$1</li>')
-      .replace(/^\d+\. (.+)$/gm, '<li>$1</li>')
-      .replace(/(<li>[\s\S]*?<\/li>)/g, '<ul>$1</ul>')
-      .split('\n\n').map(function(p) {
-        p = p.trim();
-        if (!p || p.startsWith('<h3>') || p.startsWith('<ul>') || p.startsWith('<div')) return p;
-        return '<p>' + p.replace(/\n/g, '<br>') + '</p>';
-      }).filter(Boolean).join('\n');
-  }
-
-  // ACTIONS
-  function copyMsg(btn) {
-    navigator.clipboard.writeText(btn.getAttribute('data-t')).then(function() {
-      btn.textContent = '✅ হয়েছে';
-      setTimeout(function() { btn.textContent = '📋 কপি'; }, 2000);
-    }).catch(function() {
-      btn.textContent = '❌ হয়নি';
     });
-  }
+}
 
-  function speakMsg(text) {
-    if (!window.speechSynthesis) return;
-    window.speechSynthesis.cancel();
-    const u = new SpeechSynthesisUtterance(text);
-    u.lang = language === 'bn' ? 'bn-BD' : language === 'hi' ? 'hi-IN' : 'en-US';
-    u.rate = 0.85;
-    window.speechSynthesis.speak(u);
+function saveChat(title, messages) {
+  if (!currentUser) return;
+  var data = { title:title.substring(0,40), messages:messages, updatedAt:firebase.firestore.FieldValue.serverTimestamp() };
+  if (currentChatId) {
+    db.collection('users').doc(currentUser.uid).collection('chats').doc(currentChatId).update(data);
+  } else {
+    db.collection('users').doc(currentUser.uid).collection('chats').add(data).then(function(ref){currentChatId=ref.id;});
   }
+}
 
-  function escHtml(t) {
-    return t.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
-  }
-  function escAttr(t) {
-    return t.replace(/'/g,"&#39;").replace(/"/g,'&quot;').replace(/\n/g,' ');
-  }
+function loadChat(chatId, data) {
+  currentChatId = chatId; chatHistory = data.messages||[];
+  document.getElementById('messages').innerHTML = '';
+  chatHistory.forEach(function(m){appendMessage(m.role==='user'?'user':'ai',m.content,false);});
+  closeSidebar();
+}
+
+function deleteChat(e, chatId) {
+  e.stopPropagation();
+  if (!confirm('এই আলোচনা মুছবেন?')) return;
+  db.collection('users').doc(currentUser.uid).collection('chats').doc(chatId).delete();
+  if (chatId===currentChatId) newChat();
+}
+
+function newChat() {
+  currentChatId=null; chatHistory=[];
+  document.getElementById('messages').innerHTML = '<div class="welcome" id="welcome"><div class="welcome-om">ॐ</div><div class="welcome-title"><em>জ্ঞান</em>-এর আলোয় আসুন</div><div class="welcome-sub">সনাতন ধর্মের যেকোনো প্রশ্ন করুন — সবকিছুর গোছালো উত্তর পাবেন।</div><div class="suggestions"><div class="suggestion-card" onclick="sendSuggestion(this)"><div class="suggestion-icon">🕉️</div><div class="suggestion-text">গায়ত্রী মন্ত্রের অর্থ ও মহিমা ব্যাখ্যা করুন</div><div class="suggestion-sub">মন্ত্র · অর্থ</div></div><div class="suggestion-card" onclick="sendSuggestion(this)"><div class="suggestion-icon">🌸</div><div class="suggestion-text">শ্রীমদ্ভগবদ্গীতার কর্মযোগ কী?</div><div class="suggestion-sub">গীতা · দর্শন</div></div><div class="suggestion-card" onclick="sendSuggestion(this)"><div class="suggestion-icon">🛕</div><div class="suggestion-text">দুর্গাপূজার ইতিহাস ও তাৎপর্য</div><div class="suggestion-sub">পূজা · উৎসব</div></div><div class="suggestion-card" onclick="sendSuggestion(this)"><div class="suggestion-icon">📖</div><div class="suggestion-text">রামায়ণ ও মহাভারতের মূল পার্থক্য</div><div class="suggestion-sub">শাস্ত্র · ইতিহাস</div></div></div></div>';
+  document.getElementById('inputBox').value='';
+  document.getElementById('inputBox').style.height='auto';
+  closeSidebar();
+}
+
+function sendSuggestion(el) { document.getElementById('inputBox').value=el.querySelector('.suggestion-text').textContent; sendMessage(); }
+
+async function sendMessage() {
+  var input = document.getElementById('inputBox');
+  var text = input.value.trim();
+  if (!text||isLoading) return;
+  if (!currentUser) { document.getElementById('loginScreen').style.display='flex'; return; }
+  var welcome = document.getElementById('welcome');
+  if (welcome) welcome.remove();
+  appendMessage('user',text);
+  input.value=''; input.style.height='auto';
+  document.getElementById('charCount').textContent='0 / 1000';
+  chatHistory.push({role:'user',content:text});
+  isLoading=true; document.getElementById('sendBtn').disabled=true;
+  var tid='t'+Date.now(); appendTyping(tid);
+  try {
+    var r = await fetch(WORKER_URL,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({messages:chatHistory})});
+    removeTyping(tid);
+    var d = await r.json();
+    if (!r.ok||d.error) throw new Error(d.error||'Error');
+    var reply = d.reply||'উত্তর পাওয়া যায়নি।';
+    chatHistory.push({role:'assistant',content:reply});
+    appendMessage('ai',reply);
+    saveChat(text,chatHistory);
+  } catch(err) { removeTyping(tid); appendError(err.message); }
+  finally { isLoading=false; document.getElementById('sendBtn').disabled=false; document.getElementById('inputBox').focus(); }
+}
+
+function appendMessage(role,text,scroll) {
+  if(scroll===undefined)scroll=true;
+  var msgs=document.getElementById('messages'), isAI=role==='ai';
+  var row=document.createElement('div'); row.className='msg-row';
+  var av=isAI?'<div class="msg-avatar ai">🕉️</div>':
+    '<div class="msg-avatar user">'+(currentUser&&currentUser.photoURL?'<img src="'+currentUser.photoURL+'" style="width:34px;height:34px;border-radius:9px;object-fit:cover">':'<span>'+(currentUser&&currentUser.displayName?currentUser.displayName.charAt(0):'আ')+'</span>')+'</div>';
+  row.innerHTML='<div class="msg-inner">'+av+'<div class="msg-content"><div class="msg-name '+(isAI?'ai':'')+'">'+( isAI?'DharmaAI':(currentUser?currentUser.displayName||'আপনি':'আপনি'))+'</div><div class="msg-text '+(!isAI?'user-text':'')+'">'+(isAI?fmt(text):esc(text))+'</div>'+(isAI?'<div class="msg-actions"><button class="msg-action-btn" onclick="cpy(this)" data-t="'+ea(text)+'">📋 কপি</button><button class="msg-action-btn" onclick="spk(\''+ea(text.substring(0,400))+'\')">🔊 পড়ুন</button></div>':'')+'</div></div>';
+  msgs.appendChild(row);
+  if(scroll)row.scrollIntoView({behavior:'smooth',block:'end'});
+}
+
+function appendTyping(id) {
+  var m=document.getElementById('messages'),r=document.createElement('div');
+  r.className='typing-row';r.id=id;
+  r.innerHTML='<div class="typing-inner"><div class="msg-avatar ai">🕉️</div><div class="typing-dots"><div class="typing-dot"></div><div class="typing-dot"></div><div class="typing-dot"></div></div></div>';
+  m.appendChild(r);r.scrollIntoView({behavior:'smooth',block:'end'});
+}
+function removeTyping(id){var e=document.getElementById(id);if(e)e.remove();}
+
+function appendError(msg) {
+  var m=document.getElementById('messages'),r=document.createElement('div');
+  r.className='msg-row';
+  r.innerHTML='<div class="msg-inner"><div class="msg-avatar ai">🕉️</div><div class="msg-content"><div class="msg-name ai">DharmaAI</div><div class="error-msg">❌ '+esc(msg)+'</div></div></div>';
+  m.appendChild(r);r.scrollIntoView({behavior:'smooth',block:'end'});
+}
+
+function fmt(t) {
+  return t.replace(/^### (.+)$/gm,'<h3>$1</h3>').replace(/^## (.+)$/gm,'<h3>$1</h3>')
+    .replace(/\*\*(.+?)\*\*/g,'<strong>$1</strong>').replace(/\*(.+?)\*/g,'<em>$1</em>')
+    .replace(/^> (.+)$/gm,'<div class="shloka-block">$1</div>')
+    .replace(/^[-•] (.+)$/gm,'<li>$1</li>').replace(/^\d+\. (.+)$/gm,'<li>$1</li>')
+    .replace(/(<li>[\s\S]*?<\/li>)/g,'<ul>$1</ul>')
+    .split('\n\n').map(function(p){p=p.trim();if(!p||p.startsWith('<h3>')||p.startsWith('<ul>')||p.startsWith('<div'))return p;return'<p>'+p.replace(/\n/g,'<br>')+'</p>';}).filter(Boolean).join('\n');
+}
+function cpy(b){navigator.clipboard.writeText(b.getAttribute('data-t')).then(function(){b.textContent='✅ হয়েছে';setTimeout(function(){b.textContent='📋 কপি';},2000);});}
+function spk(t){if(!window.speechSynthesis)return;window.speechSynthesis.cancel();var u=new SpeechSynthesisUtterance(t);u.lang=language==='bn'?'bn-BD':language==='hi'?'hi-IN':'en-US';u.rate=0.85;window.speechSynthesis.speak(u);}
+function esc(t){return t.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');}
+function ea(t){return t.replace(/'/g,"&#39;").replace(/"/g,'&quot;').replace(/\n/g,' ');}
 </script>
 </body>
 </html>
